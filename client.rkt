@@ -134,8 +134,11 @@
       |#
       ;; in the future, this should handle some events internally
       ;;     i.e. channel creation
-      (for-each
-        (lambda (line) (send this process-changes (string->jsexpr line)))
+      (map
+        (lambda (line)
+          (let ([lineHash (string->jsexpr line)])
+            (send this process-changes lineHash)
+            lineHash))
         (string-split (send server websocket-safe-read) "\n")))
 
     (define/public (rtm-send-message channel      message
@@ -185,7 +188,7 @@
       Stores user data on a team join event.
       |#
       (when (member 'type (hash-keys data))
-        (let ([type (hash-ref data 'type #f)])
+        (let ([type (hash-ref data 'type)])
           (when (member type '("channel_created" "group_joined"))
             (let ([channel (hash-ref data 'channel)])
               (send server attach-channel
