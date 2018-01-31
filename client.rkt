@@ -3,6 +3,8 @@
 (include "./server.rkt")
 (include "./util.rkt")
 
+(provide SlackClient%)
+
 (define SlackClient%
   (class object%
     #|
